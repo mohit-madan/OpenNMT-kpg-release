@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="64652424-6edc-4d51-a162-936e1be3b4ad" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -13,16 +12,30 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.md">
           <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
             <state split_layout="SPLIT">
-              <first_editor relative-caret-position="170">
-                <caret line="2" column="300" selection-start-line="2" selection-start-column="300" selection-end-line="2" selection-end-column="300" />
+              <first_editor relative-caret-position="68">
+                <caret line="4" column="102" selection-start-line="4" selection-start-column="102" selection-end-line="4" selection-end-column="102" />
               </first_editor>
               <second_editor />
             </state>
           </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/kp_evaluate.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="7106">
+              <caret line="434" column="71" selection-start-line="434" selection-start-column="50" selection-end-line="434" selection-end-column="71" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/notebook/inference.ipynb">
+          <provider selected="true" editor-type-id="jupyter-editor" />
         </entry>
       </file>
     </leaf>
@@ -30,6 +43,11 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>dataset</find>
+      <find>soft</find>
+      <find>partial</find>
+      <find>sale</find>
+      <find>10k</find>
+      <find>sales</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -49,9 +67,8 @@
     <other-services-enabled>false</other-services-enabled>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="x" value="-1920" />
-    <option name="width" value="1920" />
-    <option name="height" value="1080" />
+    <option name="width" value="1680" />
+    <option name="height" value="1050" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -59,6 +76,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -69,19 +87,23 @@
             <path>
               <item name="OpenNMT-kpg-release" type="b2602c69:ProjectViewProjectNode" />
               <item name="OpenNMT-kpg-release" type="462c0819:PsiDirectoryNode" />
+              <item name="data" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="OpenNMT-kpg-release" type="b2602c69:ProjectViewProjectNode" />
+              <item name="OpenNMT-kpg-release" type="462c0819:PsiDirectoryNode" />
               <item name="notebook" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/data" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -93,6 +115,9 @@
     <property name="settings.editor.selected.configurable" value="preferences.fileTypes" />
   </component>
   <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/data/keyphrase" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/data" />
     </key>
@@ -117,7 +142,7 @@
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
@@ -139,18 +164,35 @@
       <workItem from="1570392441023" duration="1142000" />
       <workItem from="1586977715495" duration="459000" />
       <workItem from="1586978986822" duration="2490000" />
-      <workItem from="1587098222805" duration="5205000" />
+      <workItem from="1587098222805" duration="5826000" />
+      <workItem from="1587270153179" duration="1117000" />
+      <workItem from="1594844471000" duration="703000" />
+      <workItem from="1595007866752" duration="6000" />
     </task>
+    <task id="LOCAL-00001" summary="Update readme">
+      <created>1587180935212</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1587180935212</updated>
+    </task>
+    <task id="LOCAL-00002" summary="add a notebook for inference with input text only">
+      <created>1594845004548</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1594845004549</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="9296000" />
+    <option name="totallyTimeSpent" value="11743000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1920" y="0" width="1920" height="1080" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.14749734" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.15262516" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -176,6 +218,11 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Update readme" />
+    <MESSAGE value="add a notebook for inference with input text only" />
+    <option name="LAST_COMMIT_MESSAGE" value="add a notebook for inference with input text only" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/models/.gitkeep">
@@ -208,15 +255,32 @@
     <entry file="file://$PROJECT_DIR$/notebook/json_process.ipynb">
       <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="17" column="14" lean-forward="true" selection-start-line="17" selection-start-column="14" selection-end-line="17" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
-          <first_editor relative-caret-position="170">
-            <caret line="2" column="300" selection-start-line="2" selection-start-column="300" selection-end-line="2" selection-end-column="300" />
+          <first_editor relative-caret-position="68">
+            <caret line="4" column="102" selection-start-line="4" selection-start-column="102" selection-end-line="4" selection-end-column="102" />
           </first_editor>
           <second_editor />
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/kp_evaluate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="7106">
+          <caret line="434" column="71" selection-start-line="434" selection-start-column="50" selection-end-line="434" selection-end-column="71" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/notebook/inference.ipynb">
+      <provider selected="true" editor-type-id="jupyter-editor" />
     </entry>
   </component>
   <component name="masterDetails">
