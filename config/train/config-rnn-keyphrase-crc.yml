@@ -5,7 +5,7 @@ model_type: keyphrase
 #keep_checkpoint: 20
 seed: 3435
 #train_steps: 100000
-valid_steps: 20000
+valid_steps: 2000
 report_every: 100
 
 encoder_type: brnn

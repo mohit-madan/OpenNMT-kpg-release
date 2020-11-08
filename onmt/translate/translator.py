@@ -6,8 +6,7 @@ import json
 import os
 import math
 import time
-import numpy as np
-from itertools import count, zip_longest
+from itertools import count
 
 import torch
 
@@ -47,25 +46,6 @@ def build_translator(opt, report_score=True, logger=None, out_file=None):
         logger=logger
     )
     return translator
-
-
-def max_tok_len(new, count, sofar):
-    """
-    In token batching scheme, the number of sequences is limited
-    such that the total number of src/tgt tokens (including padding)
-    in a batch <= batch_size
-    """
-    # Maintains the longest src and tgt length in the current batch
-    global max_src_in_batch  # this is a hack
-    # Reset current longest length at a new batch (count=1)
-    if count == 1:
-        max_src_in_batch = 0
-        # max_tgt_in_batch = 0
-    # Src: [<bos> w1 ... wN <eos>]
-    max_src_in_batch = max(max_src_in_batch, len(new.src[0]) + 2)
-    # Tgt: [w1 ... wM <eos>]
-    src_elements = count * max_src_in_batch
-    return src_elements
 
 
 class Translator(object):
@@ -319,9 +299,7 @@ class Translator(object):
             tgt=None,
             src_dir=None,
             batch_size=None,
-            batch_type="sents",
             attn_debug=False,
-            align_debug=False,
             phrase_table="",
             opt=None
     ):
@@ -334,7 +312,6 @@ class Translator(object):
                 for certain types of data).
             batch_size (int): size of examples per mini-batch
             attn_debug (bool): enables the attention logging
-            align_debug (bool): enables the word alignment logging
 
         Returns:
             (`list`, `list`)
@@ -348,17 +325,15 @@ class Translator(object):
             raise ValueError("batch_size must be set")
 
         # modified by @memray to accommodate keyphrase
-        src_data = {"reader": self.src_reader, "data": src, "dir": src_dir}
-        tgt_data = {"reader": self.tgt_reader, "data": tgt, "dir": None}
-        _readers, _data, _dir = inputters.Dataset.config(
-            [('src', src_data), ('tgt', tgt_data)])
-
         data = inputters.str2dataset[self.data_type](
-            self.fields, readers=_readers, data=_data, dirs=_dir,
+            self.fields,
+            readers=([self.src_reader, self.tgt_reader]
+                     if tgt else [self.src_reader]),
+            data=[("src", src), ("tgt", tgt)] if tgt else [("src", src)],
+            dirs=[src_dir, None] if tgt else [src_dir],
             sort_key=inputters.str2sortkey[self.data_type],
             filter_pred=self._filter_pred
         )
-
         # @memray, as Dataset is only instantiated here, having to use this plugin setter
         if isinstance(data, KeyphraseDataset):
             data.tgt_type=self.tgt_type
@@ -367,7 +342,6 @@ class Translator(object):
             dataset=data,
             device=self._dev,
             batch_size=batch_size,
-            batch_size_fn=max_tok_len if batch_type == "tokens" else None,
             train=False,
             sort=False,
             # sort_within_batch=True,
@@ -412,33 +386,31 @@ class Translator(object):
                 for t in translations:
                     t.add_copied_flags(vocab_size)
 
-            for trans in translations:
-                all_scores += [trans.pred_scores[:self.n_best]]
-                pred_score_total += trans.pred_scores[0]
-                pred_words_total += len(trans.pred_sents[0])
+            for tran in translations:
+                all_scores += [tran.pred_scores[:self.n_best]]
+                pred_score_total += tran.pred_scores[0]
+                pred_words_total += len(tran.pred_sents[0])
                 if tgt is not None:
-                    gold_score_total += trans.gold_score
-                    gold_words_total += len(trans.gold_sent) + 1
+                    gold_score_total += tran.gold_score
+                    gold_words_total += len(tran.gold_sent) + 1
 
                 n_best_preds = [" ".join(pred)
-                                for pred in trans.pred_sents[:self.n_best]]
+                                for pred in tran.pred_sents[:self.n_best]]
                 all_predictions += [n_best_preds]
 
-                if self.out_file:
-                    import json
-                    if self.data_type == "keyphrase":
-                        self.out_file.write(json.dumps(trans.__dict__()) + '\n')
-                        self.out_file.flush()
-                    else:
-                        self.out_file.write('\n'.join(n_best_preds) + '\n')
-                        self.out_file.flush()
+                if self.data_type == "keyphrase":
+                    self.out_file.write(json.dumps(tran.__dict__()) + '\n')
+                    self.out_file.flush()
+                else:
+                    self.out_file.write('\n'.join(n_best_preds) + '\n')
+                    self.out_file.flush()
 
                 if self.verbose:
                     sent_number = next(counter)
                     if self.data_type == "keyphrase":
-                        output = trans.log_kp(sent_number)
+                        output = tran.log_kp(sent_number)
                     else:
-                        output = trans.log(sent_number)
+                        output = tran.log(sent_number)
 
                     if self.verbose:
                         if self.logger:
@@ -447,11 +419,11 @@ class Translator(object):
                             os.write(1, output.encode('utf-8'))
 
                 if attn_debug:
-                    preds = trans.pred_sents[0]
+                    preds = tran.pred_sents[0]
                     preds.append('</s>')
-                    attns = trans.attns[0].tolist()
+                    attns = tran.attns[0].tolist()
                     if self.data_type == 'text':
-                        srcs = trans.src_raw
+                        srcs = tran.src_raw
                     else:
                         srcs = [str(item) for item in range(len(attns[0]))]
                     header_format = "{:>10.10} " + "{:>10.7} " * len(srcs)
@@ -689,8 +661,7 @@ class Translator(object):
                                           src_map)
             # here we have scores [tgt_lenxbatch, vocab] or [beamxbatch, vocab]
             if batch_offset is None:
-                scores = scores.view(-1, batch.batch_size, scores.size(-1))
-                scores = scores.transpose(0, 1).contiguous()
+                scores = scores.view(batch.batch_size, -1, scores.size(-1))
             else:
                 scores = scores.view(-1, self.beam_size, scores.size(-1))
             scores = collapse_copy_scores(

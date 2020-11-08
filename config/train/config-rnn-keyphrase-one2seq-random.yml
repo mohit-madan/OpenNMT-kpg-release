@@ -1,0 +1,43 @@
+batch_size: 64
+bridge: False
+
+context_gate: 'both'
+copy_attn: True
+
+coverage_attn: True
+data: data/keyphrase/meng17/sbset
+
+dropout: 0.0
+encoder_type: 'brnn'
+exp: sbset-meng17-random-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1
+
+
+global_attention: 'mlp'
+gpu_ranks: [0]
+input_feed: 1
+keep_checkpoint: -1
+layers: 1
+learning_rate: 0.05
+log_file: output/keyphrase/meng17/sbset-meng17-random-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1.log
+log_file_level: 10
+master_port: 5000
+max_grad_norm: 2.0
+model_type: 'keyphrase'
+optim: 'adagrad'
+report_every: 100
+reuse_copy_attn: True
+rnn_size: 150
+rnn_type: 'GRU'
+save_checkpoint_steps: 5000
+save_model: models/keyphrase/meng17/sbset-meng17-random-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1
+seed: 3435
+share_embeddings: True
+tensorboard: True
+tensorboard_log_dir: runs/keyphrase/meng17/kp20k-meng17-random-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1/
+train_steps: 50000
+valid_batch_size: 64
+valid_steps: 2000
+word_vec_size: 100
+world_size: 1
+tgt_type: 'random'
+train_from: models/keyphrase/meng17-one2seq-kp20k-topmodels/kp20k-meng17-random-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1_step_90000.pt

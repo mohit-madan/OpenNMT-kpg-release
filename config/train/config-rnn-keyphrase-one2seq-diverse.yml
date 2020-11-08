@@ -1,14 +1,15 @@
 model_type: keyphrase
-tgt_type: verbatim_append
+#tgt_type: verbatim_append
+tht_type: random
 
-data: data/keyphrase/meng17/kp20k
-# data: data/keyphrase/meng17/kp20k_small
+data: data/keyphrase/meng17/sbset
+# data: data/keyphrase/meng17/sbset_small
 #data: data/keyphrase/meng17/stackexchange
-save_checkpoint_steps: 5000
-keep_checkpoint: 10000
+save_checkpoint_steps: 500
+keep_checkpoint: 1000
 seed: 3435
-train_steps: 100000
-valid_steps: 200000 # no validation
+train_steps: 50000
+valid_steps: 500 # no validation
 report_every: 100
 
 encoder_type: brnn
@@ -49,13 +50,15 @@ detach_tgt_enc: 'true'
 num_negsample: 16
 use_ending_state: 'true'
 
-exp: kp20k-one2seq-birnn-GRU150-EMB100-ATTNmlp-Dropout00
-save_model: models/keyphrase/meng17-one2seq/kp20k.one2seq.birnn.Dropout00
-log_file: output/keyphrase/meng17-one2seq/kp20k.one2seq.birnn.Dropout00.log
-tensorboard_log_dir: runs/keyphrase/meng17-one2seq/kp20k.one2seq.birnn.Dropout00/
+exp: sbset-one2seq-birnn-GRU150-EMB100-ATTNmlp-Dropout00
+save_model: models/keyphrase/meng17-one2seq/sbset.one2seq.birnn.Dropout00
+log_file: output/keyphrase/meng17-one2seq/sbset.one2seq.birnn.Dropout00.log
+tensorboard_log_dir: runs/keyphrase/meng17-one2seq/sbset.one2seq.birnn.Dropout00/
 
 world_size: 1
-gpu_ranks: []
+gpu_ranks: [0]
 #- 0
 #- 1
 master_port: 5000
+
+#train_from: models/keyphrase/meng17-one2seq-kp20k-topmodels/kp20k-meng17-no_sort-rnn-BS64-LR0.05-Layer1-Dim150-Emb100-Dropout0.0-Copytrue-Reusetrue-Covtrue-PEfalse-Contboth-IF1_step_90000.pt

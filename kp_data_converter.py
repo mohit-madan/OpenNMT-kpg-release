@@ -20,7 +20,6 @@ __author__ = "Rui Meng"
 __email__ = "rui.meng@pitt.edu"
 
 
-
 def heuristic_filter(src_token, tgts_token, tgts_str, opt):
     '''
     tokenize and truncate data, filter examples that exceed the length limit
@@ -35,9 +34,9 @@ def heuristic_filter(src_token, tgts_token, tgts_str, opt):
     print('*' * 50)
 
     # SOURCE FILTER: if length of src is over/under the given length limit, discard
-    if opt.max_src_seq_length and len(src_token) > opt.max_src_seq_length:
-        print("INVALID: source is too long [len=%d]: \n%s" % (len(src_token), str(src_token)))
-        return False, None, None
+    # if opt.max_src_seq_length and len(src_token) > opt.max_src_seq_length:
+    #     print("INVALID: source is too long [len=%d]: \n%s" % (len(src_token), str(src_token)))
+    #     return False, None, None
     if opt.min_src_seq_length and len(src_token) < opt.min_src_seq_length:
         print("INVALID: source is too short [len=%d]: \n%s" % (len(src_token), str(src_token)))
         return False, None, None
@@ -50,9 +49,9 @@ def heuristic_filter(src_token, tgts_token, tgts_str, opt):
         tgt_token_for_filter = utils.meng17_tokenize(tgt_str)
 
         # FILTER 1: if length of tgt exceeds limit, discard
-        if opt.max_tgt_seq_length and len(tgt_token_for_filter) > opt.max_tgt_seq_length:
-            print("\tInvalid Target: target is too long: %s (originally %s)" % (str(tgt_token), tgt_str))
-            continue
+        # if opt.max_tgt_seq_length and len(tgt_token_for_filter) > opt.max_tgt_seq_length:
+        #     print("\tInvalid Target: target is too long: %s (originally %s)" % (str(tgt_token), tgt_str))
+        #     continue
         if opt.min_tgt_seq_length and len(tgt_token_for_filter) < opt.min_tgt_seq_length:
             print("\tInvalid Target: target is too short: %s (originally %s)" % (str(tgt_token), tgt_str))
             continue
@@ -186,6 +185,11 @@ if __name__ == '__main__':
         # remove all the abbreviations/acronyms in parentheses in keyphrases
         keywords = [re.sub(r'\(.*?\)|\[.*?\]|\{.*?\}', '', kw) for kw in keywords]
 
+        if isinstance(abstract, str):
+            pass
+        else:
+            continue
+
         if opt.lower:
             title = title.lower()
             abstract = abstract.lower()
@@ -217,7 +221,8 @@ if __name__ == '__main__':
             abstract_token = utils.replace_numbers_to_DIGIT(abstract_token, k=2)
             keywords_token = [utils.replace_numbers_to_DIGIT(kw, k=2) for kw in keywords_token]
 
-        src_token = title_token+["."]+abstract_token
+        # src_token = title_token+["."]+abstract_token
+        src_token = abstract_token
         tgts_token = keywords_token
 
         # validate keywords
@@ -263,7 +268,7 @@ if __name__ == '__main__':
         os.makedirs(output_dir)
 
     # filename = '.' + (opt.tokenizer + ('.lower' if opt.lower else ''))
-    filename = ''
+    filename = 'sample'
     src_file= open(opt.output_path+filename+'.src', 'w')
     tgt_file= open(opt.output_path+filename+'.tgt', 'w')
 

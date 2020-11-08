@@ -119,10 +119,12 @@ def extract_pke(text, method, dataset_path=None, df_path=None, top_k=10):
         #    words) for computing left/right contexts can be specified.
         window = 2
         use_stems = False  # use stems instead of words for weighting
-        extractor.candidate_weighting(window=window,
-                                      stoplist=stoplist,
-                                      use_stems=use_stems)
-
+        try:
+            extractor.candidate_weighting(window=window,
+                                          stoplist=stoplist,
+                                          use_stems=use_stems)
+        except:
+            print("error while extracting phrases")
         # 5. get the 10-highest scored candidates as keyphrases.
         #    redundant keyphrases are removed from the output using levenshtein
         #    distance and a threshold.
@@ -132,8 +134,8 @@ def extract_pke(text, method, dataset_path=None, df_path=None, top_k=10):
         raise NotImplementedError
 
 
-    for kp_id, kp in enumerate(keyphrases):
-        print('\t%d: %s (%.4f)' % (kp_id + 1, kp[0], kp[1]))
+    # for kp_id, kp in enumerate(keyphrases):
+    #     print('\t%d: %s (%.4f)' % (kp_id + 1, kp[0], kp[1]))
 
     return keyphrases
 

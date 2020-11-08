@@ -151,25 +151,20 @@ class KeyphraseDataReader(DataReaderBase):
             "Cannot use _dir with KeyphraseDataReader."
         if isinstance(sequences, str):
             sequences = DataReaderBase._read_file(sequences)
-        for i, line in enumerate(sequences):
-            try:
-                # default input is a json line
-                line = line.decode("utf-8")
-                json_dict = json.loads(line)
-                # Note tgt could be a list of strings
-                seq = json_dict[side]
-                # torchtext field only takes numeric features
-                id = json_dict['id']
-            except Exception:
-                # temporary measure for plain text input
-                seq = line
-                id = i
+        for i, json_line in enumerate(sequences):
+            # json_line = json_line.decode("utf-8")
+            json_dict = json.loads(json_line)
+            # Note tgt could be a list of strings
+            seq = json_dict[side]
+
+            # torchtext field only takes numeric features
+            id = json_dict['id']
 
             try:
                 if id.rfind('_') != -1:
                     id = id[id.rfind('_') + 1:]
                 id = int(id)
-            except Exception:
+            except ValueError:
                 # if not convertible, use indices as id
                 id = i
 
@@ -222,21 +217,10 @@ def obtain_sorted_indices(src, tgt_seqs, sort_by):
 
 
 def process_multiple_tgts(big_batch, tgt_type):
-    """
-
-    :param big_batch: a list of examples
-            src: [1, src_len]
-            tgt: [num_kp, 1, kp_len]
-    :param tgt_type:
-            specify format of target and concatenate kps in tgt accordingly
-            if one2one: randomly pick up one phrase, tgt will be [1, kp_len]
-            if one2seq: tgt will be [1, concat_kps_len]
-    :return:
-    """
     new_batch = []
     for ex in big_batch:
         # a workaround: truncate to maximum 8 phrases (some noisy data points have many phrases)
-        if hasattr(ex, "tgt") and len(ex.tgt) > 8:
+        if len(ex.tgt) > 8:
             random_choise = np.random.choice(len(ex.tgt), 8)
             if hasattr(ex, "tgt"):
                 ex.tgt = [ex.tgt[idx] for idx in random_choise]
@@ -252,9 +236,6 @@ def process_multiple_tgts(big_batch, tgt_type):
             rand_idx = np.random.randint(len(ex.tgt))
             tgt = ex.tgt[rand_idx]
             alignment = ex.alignment[rand_idx] if hasattr(ex, "alignment") else None
-
-            ex.tgt = tgt
-            ex.alignment = alignment
         elif tgt_type in ['no_sort', 'random', 'verbatim_append', 'verbatim_prepend', 'alphabetical', 'length']:
             # generate one2seq training data points
             order = obtain_sorted_indices(ex.src, ex.tgt, sort_by=tgt_type)
@@ -279,9 +260,6 @@ def process_multiple_tgts(big_batch, tgt_type):
                 alignment = torch.torch.from_numpy(np.concatenate(alignment, axis=None))
             else:
                 alignment = None
-
-            ex.tgt = tgt
-            ex.alignment = alignment
             '''
             elif tgt_type == 'no_sort':
                 # return tgts in original order
@@ -299,10 +277,11 @@ def process_multiple_tgts(big_batch, tgt_type):
             '''
         # no processing for 'multiple' (test phrase)
         elif tgt_type == 'multiple':
-            pass
+            tgt = ex.tgt
         else:
             raise NotImplementedError
 
+        ex.tgt = tgt
         setattr(ex, 'sep_indices', sep_indices)
 
         if hasattr(ex, "alignment"):
@@ -313,6 +292,7 @@ def process_multiple_tgts(big_batch, tgt_type):
             else:
                 # for other training cases, with one target sequence
                 assert len(tgt[0]) + 2 == alignment.size()[0]
+            ex.alignment = alignment
 
         new_batch.append(ex)
 
@@ -325,7 +305,7 @@ def kp_sort_key(ex):
         return len(ex.src[0]), len(ex.tgt[0])
     return len(ex.src[0])
 
-# deprecated
+
 def max_tok_len(new, count, sofar):
     """
     Specialized for keyphrase generation task
@@ -351,9 +331,21 @@ def max_tok_len(new, count, sofar):
 
 def copyseq_tokenize(text):
     '''
-    moved to onmt.keyphrase.utils.meng17_tokenize()
+    The tokenizer used in Meng et al. ACL 2017
+    parse the feed-in text, filtering and tokenization
+    keep [_<>,\(\)\.\'%], replace digits to <digit>, split by [^a-zA-Z0-9_<>,\(\)\.\'%]
+    :param text:
+    :return: a list of tokens
     '''
-    pass
+    # remove line breakers
+    text = re.sub(r'[\r\n\t]', ' ', text)
+    # pad spaces to the left and right of special punctuations
+    text = re.sub(r'[_<>,\(\)\.\'%]', ' \g<0> ', text)
+    # tokenize by non-letters (new-added + # & *, but don't pad spaces, to make them as one whole word)
+    tokens = list(filter(lambda w: len(w) > 0, re.split(r'[^a-zA-Z0-9_<>,#&\+\*\(\)\.\'%]', text)))
+
+    return tokens
+
 
 # mix this with partial
 def _feature_tokenize(
@@ -377,7 +369,7 @@ def _feature_tokenize(
         string = string.lower()
 
     # @memray 20190308 to make tokenized results same between src/tgt, changed here back to a simple splitter (whitespace)
-    # move complicated tokenization into pre-preprocess in kp_data_converter.py
+    # move complicated tokenization into pre-preprocess
     tokens = string.split(tok_delim)
     # tokens = copyseq_tokenize(string)
     if truncate is not None:

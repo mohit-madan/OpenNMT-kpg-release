@@ -12,6 +12,7 @@ import datetime
 import time
 import numpy as np
 import pandas as pd
+import csv
 
 import kp_evaluate
 from onmt.utils import split_corpus
@@ -49,6 +50,18 @@ def _get_parser():
     opts.translate_opts(parser)
 
     return parser
+
+
+def savePreds(src_shard, tgt_shard, all_predictions, all_scores):
+    with open('fileSuperVised.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(["Input sentence", "Keyword Predictions", "Target Predictions", "Score"])
+        for i in range(0, len(src_shard)):
+            src = json.loads(src_shard[i].decode('utf-8'))['src']
+            keyword = json.loads(tgt_shard[i].decode('utf-8'))['tgt']
+            all_predictions_string = '/'.join([str(elem) for elem in all_predictions[i]])
+            all_scores_string = '/'.join([str(elem.data.cpu().numpy()) for elem in all_scores[i]])
+            writer.writerow([src, all_predictions_string, keyword, all_scores_string])
 
 
 if __name__ == "__main__":
@@ -94,6 +107,8 @@ if __name__ == "__main__":
         src_shard = split_corpus(opt.data_dir + '/%s/%s_test.src' % (testset, testset), shard_size=-1)
         tgt_shard = split_corpus(opt.data_dir + '/%s/%s_test.tgt' % (testset, testset), shard_size=-1)
         src_shard, tgt_shard = list(zip(src_shard, tgt_shard))[0]
+        # src_shard = list(zip(src_shard))[0]
+        # tgt_shard = None
         logger.info("Loaded data from %s: #src=%d, #tgt=%d" % (testset, len(src_shard), len(tgt_shard)))
         testset_path_dict[testset] = (opt.data_dir + '/%s/%s_test.src' % (testset, testset),
                                       opt.data_dir + '/%s/%s_test.tgt' % (testset, testset),
@@ -101,7 +116,7 @@ if __name__ == "__main__":
 
     while True:
         new_ckpts = scan_new_checkpoints(opt.ckpt_dir, opt.output_dir)
-        new_ckpts_items = sorted(new_ckpts.items(), key=lambda x:int(x[0][x[0].rfind('step_')+5:]))
+        new_ckpts_items = sorted(new_ckpts.items(), key=lambda x: int(x[0][x[0].rfind('step_')+5:]))
         random.shuffle(new_ckpts_items)
         for ckpt_id, (ckpt_name, ckpt_path) in enumerate(new_ckpts_items):
             logger.info("[%d/%d] Checking checkpoint: %s" % (ckpt_id, len(new_ckpts), ckpt_path))
@@ -155,7 +170,7 @@ if __name__ == "__main__":
                         # set output_file for each dataset (instead of outputting to opt.output)
                         translator.out_file = codecs.open(pred_path, 'w+', 'utf-8')
                         logger.info("Start translating [%s] for %s." % (dataname, ckpt_name))
-                        _, _ = translator.translate(
+                        all_scores, all_predictions = translator.translate(
                             src=src_shard,
                             tgt=tgt_shard,
                             src_dir=opt.src_dir,
@@ -163,6 +178,8 @@ if __name__ == "__main__":
                             attn_debug=opt.attn_debug,
                             opt=opt
                         )
+                        savePreds(src_shard, tgt_shard, all_predictions, all_scores)
+
                     else:
                         logger.info("Skip translating [%s] for %s." % (dataname, ckpt_name))
 

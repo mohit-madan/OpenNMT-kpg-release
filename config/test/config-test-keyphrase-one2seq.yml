@@ -34,8 +34,8 @@ n_best: 500
 
 # Efficiency
 #batch_size: 32
-#gpu: 0
-gpu: -1
+gpu: 0
+#gpu: -1
 
 tgt_type: multiple
 #beam_terminate: full/topbeam

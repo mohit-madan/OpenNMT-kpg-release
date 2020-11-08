@@ -16,8 +16,7 @@ do
         # CPU+evaluate with predictions in top sequences -e (no pred necessity)
 #        sbatch "$CUR_DIR/"kpeval_cpu.sh -a eval -a report -c /zfs1/pbrusilovsky/rum20/kp/OpenNMT-kpg/models/keyphrase/meng17-one2seq/meng17-one2seq-kp20k-topmodels -o $output_dir -g 0 -b 32 -s $beam_width -l 40 -t topbeam -p true -d $dataset -e true
         # GPU+fullbeam
-        output_dir="/zfs1/pbrusilovsky/rum20/kp/OpenNMT-kpg/output/keyphrase/meng17-one2seq-fullbeam/meng17-one2seq-beam$beam_width-maxlen40"
-        sbatch "$CUR_DIR/"kpeval_gpu.sh -a pred -a eval -a report -c /zfs1/pbrusilovsky/rum20/kp/OpenNMT-kpg/models/keyphrase/meng17-one2seq/meng17-one2seq-kp20k-topmodels -o $output_dir -g 0 -b 16 -s $beam_width -l 40 -t full -p true -d ${dataset}
+        output_dir="D:/OpenNMT-kpg-release/output/keyphrase/meng17-one2seq-fullbeam/meng17-one2seq-beam$beam_width-maxlen40"
+        bash "$CUR_DIR/"kpeval_gpu.sh -a pred -a eval -a report -c D:/OpenNMT-kpg-release/models/keyphrase/meng17-one2seq/meng17-one2seq-kp20k-topmodels -o $output_dir -g 0 -b 16 -s $beam_width -l 40 -t full -p true -d ${dataset}
     done
 done
-
