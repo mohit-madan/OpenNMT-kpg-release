@@ -339,7 +339,6 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Flask server.OpenNMT-kpg-release" />
       <item itemvalue="Python.inference_test" />
       <item itemvalue="Python.train" />
     </list>
