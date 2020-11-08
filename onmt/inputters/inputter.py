@@ -757,7 +757,7 @@ class DatasetLazyIter(object):
         # added by @memray, as Dataset is only instantiated here, having to use this plugin setter
         if isinstance(cur_dataset, KeyphraseDataset):
             cur_dataset.load_config(self.opt)
-
+        # override existing fields since in early versions src_ex_vocab might be missing
         cur_dataset.fields = self.fields
         cur_iter = OrderedIterator(
             dataset=cur_dataset,
@@ -851,7 +851,7 @@ def build_dataset_iter(corpus_type, fields, opt, is_train=True, multi=False):
         batch_fn = max_tok_len \
             if is_train and opt.batch_type == "tokens" else None
         # @memray
-        if opt.model_dtype == "keyphrase":
+        if opt.model_type == "keyphrase":
             batch_fn = keyphrase_dataset.max_tok_len
         batch_size_multiple = 8 if opt.model_dtype == "fp16" else 1
 

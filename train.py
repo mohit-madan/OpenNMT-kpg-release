@@ -50,6 +50,9 @@ def main(opt):
                     use_vocab=False, dtype=torch.long,
                     postprocessing=make_tgt, sequential=False)
                 fields["sep_indices"] = sep_indices
+        if 'src_ex_vocab' not in fields:
+            src_ex_vocab = RawField()
+            fields["src_ex_vocab"] = src_ex_vocab
 
     if len(opt.data_ids) > 1:
         train_shards = []

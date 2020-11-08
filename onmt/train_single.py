@@ -87,6 +87,10 @@ def main(opt, device_id, batch_queue=None, semaphore=None):
                     postprocessing=make_tgt, sequential=False)
                 fields["sep_indices"] = sep_indices
 
+        if 'src_ex_vocab' not in fields:
+            src_ex_vocab = RawField()
+            fields["src_ex_vocab"] = src_ex_vocab
+
     # Report src and tgt vocab sizes, including for features
     for side in ['src', 'tgt']:
         f = fields[side]
